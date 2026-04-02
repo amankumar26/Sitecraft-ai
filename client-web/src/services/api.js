@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: `http://${window.location.hostname}:5000/api`, // Pointing to API Gateway dynamically
+  baseURL: import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`,
 });
 
 // Add token to requests

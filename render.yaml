@@ -1,0 +1,133 @@
+services:
+  # ---------------------------------------------------------
+  # BACKEND SERVICES
+  # ---------------------------------------------------------
+  
+  # Auth Service
+  - type: web
+    name: sitecraft-auth-service
+    env: node
+    rootDir: services/auth-service
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5001
+      - key: MONGO_URI
+        sync: false # User should set this in Render Dashboard or .env
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_VERSION
+        value: 20
+
+  # Project Service
+  - type: web
+    name: sitecraft-project-service
+    env: node
+    rootDir: services/project-service
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5002
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_VERSION
+        value: 20
+
+  # Chat Service
+  - type: web
+    name: sitecraft-chat-service
+    env: node
+    rootDir: services/chat-service
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5003
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_VERSION
+        value: 20
+
+  # AI Service
+  - type: web
+    name: sitecraft-ai-service
+    env: node
+    rootDir: services/ai-service
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5004
+      - key: MONGO_URI
+        sync: false
+      - key: NODE_VERSION
+        value: 20
+
+  # ---------------------------------------------------------
+  # API GATEWAY
+  # ---------------------------------------------------------
+  - type: web
+    name: sitecraft-api-gateway
+    env: node
+    rootDir: gateway
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: AUTH_SERVICE_URL
+        value: http://sitecraft-auth-service:5001
+      - key: PROJECT_SERVICE_URL
+        value: http://sitecraft-project-service:5002
+      - key: CHAT_SERVICE_URL
+        value: http://sitecraft-chat-service:5003
+      - key: AI_SERVICE_URL
+        value: http://sitecraft-ai-service:5004
+      - key: NODE_VERSION
+        value: 20
+
+  # ---------------------------------------------------------
+  # FRONTEND WEBSITES
+  # ---------------------------------------------------------
+  
+  # Client Website
+  - type: static
+    name: sitecraft-client-web
+    env: static
+    rootDir: client-web
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: sitecraft-api-gateway
+          type: web
+          property: host
+        prefix: https://
+        suffix: /api
+      - key: NODE_VERSION
+        value: 20
+
+  # Admin Website
+  - type: static
+    name: sitecraft-admin-web
+    env: static
+    rootDir: admin-web
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: sitecraft-api-gateway
+          type: web
+          property: host
+        prefix: https://
+        suffix: /api
+      - key: NODE_VERSION
+        value: 20
